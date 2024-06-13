@@ -1,4 +1,4 @@
-describe('Issue comments creating, editing and deleting', () => {
+describe('Issue comments creating, editing, and deleting', () => {
     beforeEach(() => {
         cy.visit('/');
         cy.url().should('eq', `${Cypress.env('baseUrl')}project/board`).then((url) => {
@@ -9,9 +9,11 @@ describe('Issue comments creating, editing and deleting', () => {
 
     const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
 
-    it('Should create a comment successfully', () => {
+    it('Should create, edit and delete a comment successfully', () => {
         const comment = 'TEST_COMMENT';
+        const editedComment = 'TEST_COMMENT_EDITED';
 
+        // Step 1: Create a comment
         getIssueDetailsModal().within(() => {
             cy.contains('Add a comment...')
                 .click();
@@ -25,12 +27,8 @@ describe('Issue comments creating, editing and deleting', () => {
             cy.contains('Add a comment...').should('exist');
             cy.get('[data-testid="issue-comment"]').should('contain', comment);
         });
-    });
 
-    it('Should edit a comment successfully', () => {
-        const previousComment = 'An old silent pond...';
-        const comment = 'TEST_COMMENT_EDITED';
-
+        // Step 2: Edit the created comment
         getIssueDetailsModal().within(() => {
             cy.get('[data-testid="issue-comment"]')
                 .first()
@@ -39,9 +37,9 @@ describe('Issue comments creating, editing and deleting', () => {
                 .should('not.exist');
 
             cy.get('textarea[placeholder="Add a comment..."]')
-                .should('contain', previousComment)
+                .should('have.value', comment) // Ensures the textarea contains the previous comment
                 .clear()
-                .type(comment);
+                .type(editedComment);
 
             cy.contains('button', 'Save')
                 .click()
@@ -49,11 +47,10 @@ describe('Issue comments creating, editing and deleting', () => {
 
             cy.get('[data-testid="issue-comment"]')
                 .should('contain', 'Edit')
-                .and('contain', comment);
+                .and('contain', editedComment);
         });
-    });
 
-    it('Should delete a comment successfully', () => {
+        // Step 3: Delete the edited comment
         getIssueDetailsModal()
             .find('[data-testid="issue-comment"]')
             .contains('Delete')
@@ -65,7 +62,6 @@ describe('Issue comments creating, editing and deleting', () => {
             .should('not.exist');
 
         getIssueDetailsModal()
-            .find('[data-testid="issue-comment"]')
-            .should('not.exist');
+            cy.get('[data-testid="issue-comment"]').should('not.contain', editedComment);
     });
 });

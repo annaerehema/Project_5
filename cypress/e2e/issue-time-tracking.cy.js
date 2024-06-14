@@ -1,4 +1,4 @@
-import TimeTracking from "../../pages/TimeTracking";
+import TimeTracking from "../pages/TimeTracking.js";
 import { faker } from "@faker-js/faker";
 
 describe("Time Tracking", () => {
@@ -22,9 +22,9 @@ describe("Time Tracking", () => {
   const spentTime = "2";
   const remainingTime = "5";
 
-  it("Should Create Issue and Test Time Estimation and Time Logging Functionality: Add, Edit, Assert, and Remove", () => {
+  it("Should create issue and perform time tracking functionalities: add, edit, assert and remove time estimation", () => {
     TimeTracking.createIssue(issueDetails);
-    TimeTracking.ensureIssueIsCreated(expectedAmountIssues, issueDetails);
+    TimeTracking.ensureIssueIsCreated(expectedAmountIssues,issueDetails);
     TimeTracking.addNewTime(estimation, issueDetails.title);
     TimeTracking.ensureNewTimeWasAdded(estimation, issueDetails.title);
     TimeTracking.editTime(estimation2, issueDetails.title);

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import IssueTimeTrack from "../pages/IssueTimeTrack.js";
+import IssueTimeTrack from "../pages/TimeTracking.js";
 
 describe('Issue create', () => {
   beforeEach(() => {
@@ -179,83 +179,4 @@ it('TC2 - Should create a task issue with random data and validate it successful
         });
     });
 });
-});
-describe("Time-tracking functionality tests of the issue", () => {
-  const issueTimeTracker = new IssueTimeTrack();
-  const estimation = "10";
-  const newEstimation = "20";
-  const logHours = "2";
-  const newLogHours = "3";
-  const issueDescription = "Creating a ticket for time tracking functionality testing";
-  const issueTitle = "Time track test";
-  const issueCreatedConfirmation = "Issue has been successfully created";
-  const backLogList = '[data-testid="board-list:backlog"]';
-  const estimatedInputField = 'input[placeholder="Number"]';
-
-  beforeEach(() => {
-    cy.visit("/");
-
-    // Increase timeout for the URL assertion
-    cy.url({ timeout: 60000 })
-      .should("eq", `${Cypress.env("baseUrl")}project/board`)
-      .then((url) => {
-        cy.log("Navigated to URL:", url);
-        cy.visit(url + "/board?modal-issue-create=true");
-
-        // Intercept the request for creating an issue
-        cy.intercept("POST", "**/rest/api/2/issue").as("createIssue");
-
-        // Creating new issue to update time
-        cy.get('[data-testid="modal:issue-create"]', { timeout: 60000 }).within(() => {
-          cy.get('[data-testid="select:type"]').click();
-          cy.get('[data-testid="select-option:Bug"]').click();
-          cy.get(".ql-editor").type(issueDescription);
-          cy.get('input[name="title"]').type(issueTitle);
-          cy.get('[data-testid="select:userIds"]').click();
-          cy.get('[data-testid="select-option:Lord Gaben"]').click();
-          cy.get('button[type="submit"]').click();
-        });
-
-        // Check for confirmation message
-        cy.contains(issueCreatedConfirmation, { timeout: 60000 }).should("be.visible");
-
-        // Scroll backlog list into view to ensure the new issue is visible
-        cy.get(backLogList, { timeout: 60000 })
-          .scrollIntoView()
-          .should("be.visible");
-
-        // Click on the newly created issue
-        cy.get(backLogList, { timeout: 60000 })
-          .contains(issueTitle)
-          .scrollIntoView()
-          .click();
-      });
-  });
-
-  it("Should perform time estimation functionality: add, edit, and remove estimation", () => {
-    // Add estimation
-    issueTimeTracker.addEstimation(estimation);
-
-    // Ensure the estimation field is visible before interacting
-    cy.contains("Original Estimate (hours)", { timeout: 60000 })
-      .parent()
-      .should("be.visible")
-      .click();
-
-    // Add the estimation
-    cy.get(estimatedInputField, { timeout: 60000 }).type(estimation);
-    cy.get('[data-testid="modal:issue-details"]', { timeout: 60000 }).click(); // Click outside the modal to save
-
-
-    // Ensure the estimation is added
-    cy.contains("Original Estimate (hours)", { timeout: 60000 })
-      .parent()
-      .should("contain", estimation);
-
-    // Edit the estimation
-    issueTimeTracker.editEstimation(newEstimation);
-
-    // Remove the estimation
-    issueTimeTracker.removeEstimation();
-  });
 });

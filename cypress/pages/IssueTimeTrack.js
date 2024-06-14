@@ -1,39 +1,27 @@
 class IssueTimeTrack {
   getIssueDetailsModal() {
-    return cy.get('[data-testid="modal:issue-details"]', { timeout: 60000 });
+    return cy.get('[data-testid="modal:issue-details"]');
   }
 
   typeEstimation(hours) {
-    cy.get('input[placeholder="Number"]', { timeout: 60000 }).clear().type(hours);
+    cy.get('input[placeholder="Number"]').clear().type(hours);
   }
 
   waitForEstimation(estimation) {
     this.getIssueDetailsModal().within(() => {
-      cy.contains("Original Estimate (hours)", { timeout: 60000 }).parent().should("contain", estimation);
-    });
-  }
-
-  waitForLog(logHours) {
-    this.getIssueDetailsModal().within(() => {
-      cy.contains("Time Tracking", { timeout: 60000 }).parent().should("contain", logHours);
+      cy.contains("Original Estimate (hours)").parent().should("contain", estimation);
     });
   }
 
   waitForNoEstimation() {
     this.getIssueDetailsModal().within(() => {
-      cy.contains("Original Estimate (hours)", { timeout: 60000 }).parent().should("not.contain", /\d/);
-    });
-  }
-
-  waitForNoLog() {
-    this.getIssueDetailsModal().within(() => {
-      cy.contains("Time Tracking", { timeout: 60000 }).parent().should("not.contain", /\d/);
+      cy.contains("Original Estimate (hours)").parent().should("not.contain", /\d/);
     });
   }
 
   addEstimation(estimation) {
     this.getIssueDetailsModal().within(() => {
-      cy.contains("Original Estimate (hours)", { timeout: 60000 }).parent().click();
+      cy.contains("Original Estimate (hours)").parent().click();
       this.typeEstimation(estimation);
       cy.get('[data-testid="modal:issue-details"]').click(); // Click outside the modal to save
     });
@@ -43,7 +31,7 @@ class IssueTimeTrack {
 
   editEstimation(newEstimation) {
     this.getIssueDetailsModal().within(() => {
-      cy.contains("Original Estimate (hours)", { timeout: 60000 }).parent().click();
+      cy.contains("Original Estimate (hours)").parent().click();
       this.typeEstimation(newEstimation);
       cy.get('[data-testid="modal:issue-details"]').click(); // Click outside the modal to save
     });
@@ -53,42 +41,12 @@ class IssueTimeTrack {
 
   removeEstimation() {
     this.getIssueDetailsModal().within(() => {
-      cy.contains("Original Estimate (hours)", { timeout: 60000 }).parent().click();
-      cy.get('input[placeholder="Number"]', { timeout: 60000 }).clear();
+      cy.contains("Original Estimate (hours)").parent().click();
+      cy.get('input[placeholder="Number"]').clear();
       cy.get('[data-testid="modal:issue-details"]').click(); // Click outside the modal to save
     });
 
     this.waitForNoEstimation();
-  }
-
-  addLog(logHours) {
-    this.getIssueDetailsModal().within(() => {
-      cy.contains("Time Tracking", { timeout: 60000 }).parent().click();
-      this.typeEstimation(logHours);
-      cy.get('[data-testid="modal:issue-details"]').click(); // Click outside the modal to save
-    });
-
-    this.waitForLog(logHours);
-  }
-
-  editLog(newLogHours) {
-    this.getIssueDetailsModal().within(() => {
-      cy.contains("Time Tracking", { timeout: 60000 }).parent().click();
-      this.typeEstimation(newLogHours);
-      cy.get('[data-testid="modal:issue-details"]').click(); // Click outside the modal to save
-    });
-
-    this.waitForLog(newLogHours);
-  }
-
-  removeLog() {
-    this.getIssueDetailsModal().within(() => {
-      cy.contains("Time Tracking", { timeout: 60000 }).parent().click();
-      cy.get('input[placeholder="Number"]', { timeout: 60000 }).clear();
-      cy.get('[data-testid="modal:issue-details"]').click(); // Click outside the modal to save
-    });
-
-    this.waitForNoLog();
   }
 }
 
